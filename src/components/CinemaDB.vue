@@ -8,7 +8,6 @@
   <v-btn @click="removeMovies()" color="orange"  prepend-icon="$vuetify"> Очистить </v-btn>
   <div class="card-container">
     <v-card
-      :loading="loading"
       class="mx-auto my-12 card"
       max-width="374"
       v-for="movie in movies"
@@ -85,14 +84,14 @@
       <v-card-title>Жанры</v-card-title>
 
       <div v-if="(movie.genres && movie.genres[0] && movie.genres[0].name) && movie.genres.length > 0" class="px-4">
-        <v-chip-group v-model="selection">
+        <v-chip-group >
           <v-chip @click="loadRendomFilms(genre.name)"  v-for="genre in movie.genres" :key="genre.id">{{
             genre.name
           }}</v-chip>
         </v-chip-group>
       </div>
       <div v-else class="px-4">
-        <v-chip-group v-model="selection">
+        <v-chip-group >
           <v-chip @click="loadRendomFilms(genre)"  v-for="genre in movie.genres" :key="genre.id">{{
             genre
           }}</v-chip>
