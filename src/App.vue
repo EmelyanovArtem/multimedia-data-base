@@ -13,12 +13,10 @@ import { useTheme } from 'vuetify'
 
 const theme = useTheme()
 
-if(theme.global.name.value) {
-  theme.global.name.value = JSON.parse(localStorage.getItem('theme'));
-}
+theme.global.name.value = localStorage.getItem('theme') ?? 'light';
 
 function toggleTheme () {
-  theme.global.name.value = theme.global.current.value.dark ? 'light' : 'dark'
+  theme.global.name.value = theme.current.value.dark ? 'light' : 'dark'
   localStorage.setItem('theme', JSON.stringify(theme.global.name.value))
 }
 </script>
