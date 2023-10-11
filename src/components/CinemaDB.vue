@@ -10,8 +10,8 @@
     <v-card
       class="mx-auto my-12 card"
       max-width="374"
-      v-for="movie in movies"
-      :key="movie.id"
+      v-for="(movie, index) in movies"
+      :key="index"
     >
       <template v-slot:loader="{ isActive }">
         <v-progress-linear
@@ -21,16 +21,16 @@
           indeterminate
         ></v-progress-linear>
       </template>
-
+<!--        111111111111111111111111111 -->
       <v-img cover height="550" v-if="(movie.poster && movie.poster.url) && movie.poster.url !== null"  :src="movie.poster.url"></v-img>
       <v-img cover height="550" v-else-if="movie.poster !== null"  :src="movie.poster"></v-img>
       <v-img cover height="550" v-else></v-img>
 
       <v-card-item>
-        <v-card-title>{{ movie.name }}</v-card-title>
+        <v-card-title>{{ movie['name'] }}</v-card-title>
 
         <v-card-subtitle>
-          <span class="me-1">{{ movie.year }}</span>
+          <span class="me-1">{{ movie['year'] }}</span>
 
           <v-icon color="error" icon="mdi-fire-circle" size="small"></v-icon>
         </v-card-subtitle>
@@ -38,9 +38,9 @@
 
       <v-card-text>
         <v-row align="center" class="mx-0">
-          <v-rating v-if="movie.rating.kp != null"
+          <v-rating v-if="movie['rating']['kp'] != null"
           length="10"
-          :model-value="movie.rating.kp"
+          :model-value="movie['rating']['kp']"
           color="amber"
           density="compact"
           half-increments
@@ -49,7 +49,7 @@
           ></v-rating>
           <v-rating v-else
           length="10"
-          :model-value="movie.rating"
+          :model-value="movie['rating']"
           color="amber"
           density="compact"
           half-increments
@@ -101,32 +101,38 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import {
   KinopoiskDev,
   MovieQueryBuilder,
 } from "@openmoviedb/kinopoiskdev_client";
+import * as KPiterfaces from '@openmoviedb/kinopoiskdev_client/dist/types.d';
+import { defineProps, defineEmits, defineComponent } from 'vue';
+import {Movie, MovieArray} from '../interfaces/movieInterface.dot';
 
-const kp = new KinopoiskDev("PSDT8B0-29N4S3V-H0Q67XW-WCD4JM8");
-
-let moviesOnLoad;
-
-if (JSON.parse(localStorage.getItem("movies"))) {
-  moviesOnLoad = JSON.parse(localStorage.getItem("movies"));
-} else {
-  moviesOnLoad = [];
-}
-
+const kp = new KinopoiskDev(import.meta.env.VITE_KINOPOISK_KEY);
 // console.log(moviesOnLoad[0].countries);
 
-export default {
+export default defineComponent({
+  created() {
+    let moviesOnLoad: MovieArray[] = [];
+
+    const moviesData: string | null = localStorage.getItem("movies");
+    let movies: MovieArray[] = (moviesData !== null) ? JSON.parse(moviesData) : [];
+
+    if (movies) {
+      moviesOnLoad = movies;
+    } 
+
+    this.movies = moviesOnLoad;
+  },
   data() {
     return {
-      movies: moviesOnLoad,
+      movies: [] as MovieArray[],
     };
   },
   methods: {
-    async addMovies(title) {
+    async addMovies(title: string) {
       const queryBuilder = new MovieQueryBuilder();
       const query = queryBuilder
         .query(title)
@@ -140,10 +146,18 @@ export default {
 
       this.movies = [];
 
-      data.docs.forEach((e) => {
-        this.movies.push(e);
-      });
+      if (data !== null) {
+        // data.docs.forEach((e: Movie) => {
+        //   this.movies.push(e);
+        //   console.log(e);
+        // });
 
+        const dataDocs: MovieArray = data.docs as MovieArray;
+        (dataDocs).forEach((e) => {
+          this.movies.push(e);
+        });
+      }
+      
       localStorage.setItem("movies", JSON.stringify(this.movies));
       // console.log(this.movies);
     },
@@ -153,14 +167,14 @@ export default {
       localStorage.setItem("movies", JSON.stringify(this.movies));
     },
 
-    async loadRendomFilms(genre) {
+    async loadRendomFilms(genre: string) {
       // console.log(genre);
       // Создаем билдер запросов для фильмов
       const queryBuilder = new MovieQueryBuilder();
 
       // Выбираем поля, которые мы хотим получить в ответе
       const baseQuery = queryBuilder
-      .select(['id', 'name', 'rating.kp', 'poster.url', 'year', 'genres.name', 'votes', 'countries.name', 'type', 'shortDescription'])
+      // .select(['id', 'name', 'rating.kp', 'poster.url', 'year', 'genres.name', 'votes', 'countries.name', 'type', 'shortDescription'])
         // Добавляем фильтр для поиска фильмов с постером
         .filterExact('genres.name', genre)
       const query = baseQuery
@@ -171,14 +185,21 @@ export default {
       const {data, error, message} = await kp.movie.getByFilters(query);
 
       this.movies = [];
-      data.docs.forEach((e) => {
-        this.movies.push(e);
-      });
+
+      if (data !== null) {
+        // data.docs.forEach((e: Movie) => {
+        //   this.movies.push(e);
+        // });
+        const dataDocs: MovieArray = data.docs as KPiterfaces.MovieDtoV13[];
+        (dataDocs).forEach((e) => {
+          this.movies.push(e);
+        });
+      }
       // console.log(this.movies);
       localStorage.setItem("movies", JSON.stringify(this.movies));
     }
   },
-};
+});
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

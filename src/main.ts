@@ -15,6 +15,8 @@ import { registerPlugins } from '@/plugins'
 
 const app = createApp(App)
 
+import.meta.env.VITE_BASE_URL;
+
 registerPlugins(app)
 
 app.mount('#app')
