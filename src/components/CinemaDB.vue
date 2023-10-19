@@ -38,9 +38,9 @@
 
       <v-card-text>
         <v-row align="center" class="mx-0">
-          <v-rating v-if="movie['rating']['kp'] != null"
+          <v-rating v-if="movie.rating !== undefined && ((movie.rating && movie.rating.kp) &&  movie.rating.kp !== null)"
           length="10"
-          :model-value="movie['rating']['kp']"
+          :model-value="movie.rating.kp"
           color="amber"
           density="compact"
           half-increments
@@ -49,7 +49,7 @@
           ></v-rating>
           <v-rating v-else
           length="10"
-          :model-value="movie['rating']"
+          :model-value="movie.rating"
           color="amber"
           density="compact"
           half-increments
@@ -66,12 +66,12 @@
         </v-row>
 
         <div v-if="(movie.countries && movie.countries[0] && movie.countries[0].name) && movie.countries.length > 0" class="my-4 text-subtitle-1">
-          <span v-for="country in movie.countries" :key="country.id">
+          <span v-for="(country, index) in movie.countries" :key="index">
             • {{ country.name }}</span
           >, {{ movie.type }}
         </div>
         <div v-else class="my-4 text-subtitle-1">
-          <span v-for="country in movie.countries" :key="country.id">
+          <span v-for="(country, index) in movie.countries" :key="index">
             • {{ country }}</span
           >, {{ movie.type }}
         </div>
@@ -85,18 +85,20 @@
 
       <div v-if="(movie.genres && movie.genres[0] && movie.genres[0].name) && movie.genres.length > 0" class="px-4">
         <v-chip-group >
-          <v-chip @click="loadRendomFilms(genre.name)"  v-for="genre in movie.genres" :key="genre.id">{{
+          <v-chip @click="loadRendomFilms(genre.name)"  v-for="(genre, index) in movie.genres" :key="index">{{
             genre.name
           }}</v-chip>
         </v-chip-group>
       </div>
       <div v-else class="px-4">
         <v-chip-group >
-          <v-chip @click="loadRendomFilms(genre)"  v-for="genre in movie.genres" :key="genre.id">{{
+          <v-chip @click="loadRendomFilms(genre)"  v-for="(genre, index) in movie.genres" :key="index">{{
             genre
           }}</v-chip>
         </v-chip-group>
       </div>
+      <router-link :to="'/test/' + movie.id">Подробнее</router-link>
+      <router-view :movieId="movie.id"  :movies="movies"></router-view>
     </v-card>
   </div>
 </template>
@@ -115,10 +117,10 @@ const kp = new KinopoiskDev(import.meta.env.VITE_KINOPOISK_KEY);
 
 export default defineComponent({
   created() {
-    let moviesOnLoad: MovieArray[] = [];
+    let moviesOnLoad: KPiterfaces.MovieDtoV13[] = [];
 
     const moviesData: string | null = localStorage.getItem("movies");
-    let movies: MovieArray[] = (moviesData !== null) ? JSON.parse(moviesData) : [];
+    let movies: KPiterfaces.MovieDtoV13[] = (moviesData !== null) ? JSON.parse(moviesData) : [];
 
     if (movies) {
       moviesOnLoad = movies;
@@ -128,7 +130,10 @@ export default defineComponent({
   },
   data() {
     return {
-      movies: [] as MovieArray[],
+      title: '' as String,
+      movies: [] as any,
+      moviesByGenres: [] as KPiterfaces.MovieDtoV13[],
+      moviesBySearch: [] as KPiterfaces.MeiliMovieEntity[],
     };
   },
   methods: {
@@ -146,14 +151,9 @@ export default defineComponent({
 
       this.movies = [];
 
-      if (data !== null) {
-        // data.docs.forEach((e: Movie) => {
-        //   this.movies.push(e);
-        //   console.log(e);
-        // });
-
-        const dataDocs: MovieArray = data.docs as MovieArray;
-        (dataDocs).forEach((e) => {
+      if (data !== null && data !== undefined) {
+        const dataDocs: KPiterfaces.MeiliMovieEntity[] = data.docs as KPiterfaces.MeiliMovieEntity[];
+        dataDocs.forEach((e) => {
           this.movies.push(e);
         });
       }
@@ -167,7 +167,7 @@ export default defineComponent({
       localStorage.setItem("movies", JSON.stringify(this.movies));
     },
 
-    async loadRendomFilms(genre: string) {
+    async loadRendomFilms(genre: string | number | boolean) {
       // console.log(genre);
       // Создаем билдер запросов для фильмов
       const queryBuilder = new MovieQueryBuilder();
@@ -186,12 +186,9 @@ export default defineComponent({
 
       this.movies = [];
 
-      if (data !== null) {
-        // data.docs.forEach((e: Movie) => {
-        //   this.movies.push(e);
-        // });
-        const dataDocs: MovieArray = data.docs as KPiterfaces.MovieDtoV13[];
-        (dataDocs).forEach((e) => {
+      if (data !== null && data !== undefined) {
+        const dataDocs: KPiterfaces.MovieDtoV13[] = data.docs as KPiterfaces.MovieDtoV13[];
+        dataDocs.forEach((e) => {
           this.movies.push(e);
         });
       }
