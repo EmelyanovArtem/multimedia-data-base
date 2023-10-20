@@ -21,7 +21,8 @@ const routes = [
   //   ],
   // },
   {
-    path: '/test/:movieId',
+    path: '/test/:id',
+    name: 'movies',
     component: () => import('@/components/routeTesr.vue'),
   }
 ]

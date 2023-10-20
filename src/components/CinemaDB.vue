@@ -6,6 +6,7 @@
   ></v-text-field>
   <v-btn @click="addMovies(title)" color="orange" class="mr-5"  prepend-icon="$vuetify"> Поиск </v-btn>
   <v-btn @click="removeMovies()" color="orange"  prepend-icon="$vuetify"> Очистить </v-btn>
+  <router-view></router-view>
   <div class="card-container">
     <v-card
       class="mx-auto my-12 card"
@@ -98,7 +99,11 @@
         </v-chip-group>
       </div>
       <router-link :to="'/test/' + movie.id">Подробнее</router-link>
-      <router-view :movieId="movie.id"  :movies="movies"></router-view>
+      <!-- <router-link :to="{ name: 'id', params: { username: movie.id }}">
+        User
+      </router-link> -->
+      <!-- <router-view :movieId="movie.id"  :movies="movies"></router-view> -->
+      <!-- <router-view></router-view> -->
     </v-card>
   </div>
 </template>
@@ -120,11 +125,7 @@ export default defineComponent({
     let moviesOnLoad: KPiterfaces.MovieDtoV13[] = [];
 
     const moviesData: string | null = localStorage.getItem("movies");
-    let movies: KPiterfaces.MovieDtoV13[] = (moviesData !== null) ? JSON.parse(moviesData) : [];
-
-    if (movies) {
-      moviesOnLoad = movies;
-    } 
+    moviesOnLoad = (moviesData !== null) ? JSON.parse(moviesData) : [];
 
     this.movies = moviesOnLoad;
   },
@@ -132,8 +133,6 @@ export default defineComponent({
     return {
       title: '' as String,
       movies: [] as any,
-      moviesByGenres: [] as KPiterfaces.MovieDtoV13[],
-      moviesBySearch: [] as KPiterfaces.MeiliMovieEntity[],
     };
   },
   methods: {

@@ -1,6 +1,7 @@
 <template>
   <h1>{{ movieId }}</h1>
-  <p>{{ movies }} </p>
+  <h1>test</h1>
+  <!-- <p>{{ movie.id }} </p> -->
   
 </template>
 
@@ -13,16 +14,11 @@ export default defineComponent ({
     movies: Array,
     movieId: Number,
   },
-  data() {
-    return {
-      moviesA: this.movies
-    }
-  },
-  methods: {
-    movie: () => {
-      return this.moviesA.find(movie => movie.id === this.movieId);
-    }
-  }
+  // methods: {
+  //   movie: () => {
+  //     return this.movies.find(movie => movie.id === this.movieId);
+  //   }
+  // }
 })
 </script>
 
