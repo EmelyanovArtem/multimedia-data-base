@@ -1,14 +1,14 @@
 // Composables
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory, useRoute } from 'vue-router'
 
 // const test = {
 //   template: () => import('@/components/routeTesr.vue'),
 // };
 
 const routes = [
-  // {
-  //   path: '/',
-  //   component: () => import('@/layouts/default/Default.vue'),
+  {
+    path: '/',
+    component: () => import('@/components/MovieCard.vue'),
   //   children: [
   //     {
   //       path: '',
@@ -19,7 +19,7 @@ const routes = [
   //       component: () => import(/* webpackChunkName: "home" */ '@/views/Home.vue'),
   //     },
   //   ],
-  // },
+  },
   {
     path: '/test/:id',
     name: 'movies',
@@ -29,7 +29,7 @@ const routes = [
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
-  routes,
+  routes
 })
 
 export default router

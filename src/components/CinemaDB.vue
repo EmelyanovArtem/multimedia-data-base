@@ -1,114 +1,10 @@
 <template>
-  <h1 class="mb-15">Поиск фильмов, сериалов, тв-шоу</h1>
-  <v-text-field
-    @input="title = $event.target.value"
-    label="Название фильма"
-  ></v-text-field>
-  <v-btn @click="addMovies(title)" color="orange" class="mr-5"  prepend-icon="$vuetify"> Поиск </v-btn>
-  <v-btn @click="removeMovies()" color="orange"  prepend-icon="$vuetify"> Очистить </v-btn>
+  
   <router-view></router-view>
-  <div class="card-container">
-    <v-card
-      class="mx-auto my-12 card"
-      max-width="374"
-      v-for="(movie, index) in movies"
-      :key="index"
-    >
-      <template v-slot:loader="{ isActive }">
-        <v-progress-linear
-          :active="isActive"
-          color="deep-purple"
-          height="4"
-          indeterminate
-        ></v-progress-linear>
-      </template>
-<!--        111111111111111111111111111 -->
-      <v-img cover height="550" v-if="(movie.poster && movie.poster.url) && movie.poster.url !== null"  :src="movie.poster.url"></v-img>
-      <v-img cover height="550" v-else-if="movie.poster !== null"  :src="movie.poster"></v-img>
-      <v-img cover height="550" v-else></v-img>
-
-      <v-card-item>
-        <v-card-title>{{ movie['name'] }}</v-card-title>
-
-        <v-card-subtitle>
-          <span class="me-1">{{ movie['year'] }}</span>
-
-          <v-icon color="error" icon="mdi-fire-circle" size="small"></v-icon>
-        </v-card-subtitle>
-      </v-card-item>
-
-      <v-card-text>
-        <v-row align="center" class="mx-0">
-          <v-rating v-if="movie.rating !== undefined && ((movie.rating && movie.rating.kp) &&  movie.rating.kp !== null)"
-          length="10"
-          :model-value="movie.rating.kp"
-          color="amber"
-          density="compact"
-          half-increments
-          readonly
-          size="small"
-          ></v-rating>
-          <v-rating v-else
-          length="10"
-          :model-value="movie.rating"
-          color="amber"
-          density="compact"
-          half-increments
-          readonly
-          size="small"
-          ></v-rating>
-
-          <div v-if="(movie.rating && movie.rating.kp) && (movie.votes && movie.votes.kp)" class="text-grey ms-4">
-            {{ movie.rating.kp }} ({{ movie.votes.kp }})
-          </div>
-          <div v-else class="text-grey ms-4">
-            {{ movie.rating }} ({{ movie.votes }})
-          </div>
-        </v-row>
-
-        <div v-if="(movie.countries && movie.countries[0] && movie.countries[0].name) && movie.countries.length > 0" class="my-4 text-subtitle-1">
-          <span v-for="(country, index) in movie.countries" :key="index">
-            • {{ country.name }}</span
-          >, {{ movie.type }}
-        </div>
-        <div v-else class="my-4 text-subtitle-1">
-          <span v-for="(country, index) in movie.countries" :key="index">
-            • {{ country }}</span
-          >, {{ movie.type }}
-        </div>
-
-        <div>{{ movie.shortDescription }}</div>
-      </v-card-text>
-
-      <v-divider class="mx-4 mb-1"></v-divider>
-
-      <v-card-title>Жанры</v-card-title>
-
-      <div v-if="(movie.genres && movie.genres[0] && movie.genres[0].name) && movie.genres.length > 0" class="px-4">
-        <v-chip-group >
-          <v-chip @click="loadRendomFilms(genre.name)"  v-for="(genre, index) in movie.genres" :key="index">{{
-            genre.name
-          }}</v-chip>
-        </v-chip-group>
-      </div>
-      <div v-else class="px-4">
-        <v-chip-group >
-          <v-chip @click="loadRendomFilms(genre)"  v-for="(genre, index) in movie.genres" :key="index">{{
-            genre
-          }}</v-chip>
-        </v-chip-group>
-      </div>
-      <router-link :to="'/test/' + movie.id">Подробнее</router-link>
-      <!-- <router-link :to="{ name: 'id', params: { username: movie.id }}">
-        User
-      </router-link> -->
-      <!-- <router-view :movieId="movie.id"  :movies="movies"></router-view> -->
-      <!-- <router-view></router-view> -->
-    </v-card>
-  </div>
+  
 </template>
 
-<script lang="ts">
+<!-- <script lang="ts">
 import {
   KinopoiskDev,
   MovieQueryBuilder,
@@ -196,38 +92,17 @@ export default defineComponent({
     }
   },
 });
+</script> -->
+
+<script lang="ts">
+import { defineProps, defineEmits, defineComponent } from 'vue';
+import MovieCard from './MovieCard.vue';
+
+export default defineComponent({
+  components: {
+    MovieCard
+  },
+})
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style>
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
-
-#app {
-  max-width: 1200px;
-  padding: 0 20px;
-  margin: 0 auto;
-}
-
-.card-container {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.card {
-  text-align: left;
-  min-width: 374px;
-}
-</style>
