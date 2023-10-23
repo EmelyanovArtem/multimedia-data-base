@@ -14,11 +14,13 @@ import { useTheme } from 'vuetify'
 const theme = useTheme()
 
 let currentTheme = localStorage.getItem('theme') ?? 'light';
-theme.global.name.value = JSON.parse(currentTheme);
+theme.global.name.value = currentTheme;
 
 function toggleTheme () {
+  // работает, оно добавляло лишние кавычки, поэтому тема нормально не распознавалась, база
+  // всё, понял. Ну, туплю по жести иногда
   theme.global.name.value = theme.current.value.dark ? 'light' : 'dark'
-  localStorage.setItem('theme', JSON.stringify(theme.global.name.value))
+  localStorage.setItem('theme', theme.global.name.value)
 }
 
 </script>

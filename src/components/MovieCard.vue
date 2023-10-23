@@ -131,7 +131,7 @@ export default defineComponent({
   },
   data() {
     return {
-      title: '' as String,
+      title: '' as string,
       movies: [] as any,
     };
   },
